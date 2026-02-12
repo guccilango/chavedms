@@ -112,24 +112,28 @@ function renderPlayers() {
     li.dataset.name = player.nome;
     const isInPool = state.randomPool.has(player.nome);
 
-    li.innerHTML = `
-      <span class="player-name">${player.nome}</span>
-      <div class="player-actions">
-        <button class="btn btn-pool ${isInPool ? 'btn-pool-active' : ''}" title="Selecionar para aleatório">
-          <svg class="btn-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-          <span>${isInPool ? 'No Pool' : 'Pool'}</span>
-        </button>
-        <button class="btn btn-add" ${isFull ? 'disabled title="Time cheio"' : ''}>
-          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-          <span>Adicionar</span>
-        </button>
-      </div>
-    `;
+    const poolBtnClass = 'btn btn-pool' + (isInPool ? ' btn-pool-active' : '');
+    const poolLabel = isInPool ? 'No Pool' : 'Pool';
+    const addDisabled = isFull ? 'disabled title="Time cheio"' : '';
+
+    li.innerHTML =
+      '<span class="player-name">' + player.nome + '</span>' +
+      '<div class="player-actions">' +
+        '<button class="' + poolBtnClass + '" title="Selecionar para aleatorio">' +
+          '<svg class="btn-svg" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM12 16v-4M12 8h.01"/></svg>' +
+          '<span>' + poolLabel + '</span>' +
+        '</button>' +
+        '<button class="btn btn-add" ' + addDisabled + '>' +
+          '<svg class="btn-svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>' +
+          '<span>Adicionar</span>' +
+        '</button>' +
+      '</div>';
 
     const btnPool = li.querySelector('.btn-pool');
-    btnPool.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
-    const btn = li.querySelector('.btn-add');
-    btn.addEventListener('click', (e) => { e.stopPropagation(); togglePlayer(player); });
+    if (btnPool) btnPool.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
+    const btnAdd = li.querySelector('.btn-add');
+    if (btnAdd) btnAdd.addEventListener('click', (e) => { e.stopPropagation(); togglePlayer(player); });
+    li.addEventListener('click', () => { if (!isFull) togglePlayer(player); });
 
     els.playersList.appendChild(li);
   }
@@ -296,16 +300,15 @@ function renderRandomPool() {
     const li = document.createElement('li');
     li.className = 'player-row slide-in pool-item';
     li.dataset.name = player.nome;
-    li.innerHTML = `
-      <span class="player-name">${player.nome}</span>
-      <div class="player-actions">
-        <button class="btn btn-pool-remove" title="Remover do pool">
-          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-    `;
+    li.innerHTML =
+      '<span class=\"player-name\">' + player.nome + '</span>' +
+      '<div class=\"player-actions\">' +
+        '<button class=\"btn btn-pool-remove\" title=\"Remover do pool\">' +
+          '<svg class=\"btn-svg\" viewBox=\"0 0 24 24\"><path d=\"M18 6L6 18M6 6l12 12\"/></svg>' +
+        '</button>' +
+      '</div>';
     const btn = li.querySelector('.btn-pool-remove');
-    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
+    if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
     els.randomPoolList.appendChild(li);
   }
 }
