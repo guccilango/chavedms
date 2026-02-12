@@ -5,6 +5,7 @@ const state = {
   teamSize: 4,
   players: [],
   selected: new Map(),
+  randomPool: new Set(),
   lastAdded: null,
   lastRemoved: null,
 };
@@ -35,6 +36,9 @@ const els = {
   warnings: document.getElementById('warnings'),
   rankBands: document.getElementById('rankBands'),
   introOverlay: document.getElementById('introOverlay'),
+  randomPoolList: document.getElementById('randomPoolList'),
+  randomPoolCount: document.getElementById('randomPoolCount'),
+  randomPoolPanel: document.getElementById('randomPoolPanel'),
 };
 
 const rankPhrases = {
@@ -106,10 +110,15 @@ function renderPlayers() {
     const li = document.createElement('li');
     li.className = 'player-row slide-in';
     li.dataset.name = player.nome;
+    const isInPool = state.randomPool.has(player.nome);
 
     li.innerHTML = `
       <span class="player-name">${player.nome}</span>
       <div class="player-actions">
+        <button class="btn btn-pool ${isInPool ? 'btn-pool-active' : ''}" title="Selecionar para aleatório">
+          <svg class="btn-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>${isInPool ? 'No Pool' : 'Pool'}</span>
+        </button>
         <button class="btn btn-add" ${isFull ? 'disabled title="Time cheio"' : ''}>
           <svg class="btn-svg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
           <span>Adicionar</span>
@@ -117,9 +126,10 @@ function renderPlayers() {
       </div>
     `;
 
+    const btnPool = li.querySelector('.btn-pool');
+    btnPool.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
     const btn = li.querySelector('.btn-add');
     btn.addEventListener('click', (e) => { e.stopPropagation(); togglePlayer(player); });
-    li.addEventListener('click', () => { if (!isFull) togglePlayer(player); });
 
     els.playersList.appendChild(li);
   }
@@ -257,6 +267,49 @@ function updateMetrics() {
   }
 }
 
+/* ───────── Random Pool Toggle ───────── */
+function toggleRandomPool(player) {
+  if (state.randomPool.has(player.nome)) {
+    state.randomPool.delete(player.nome);
+  } else {
+    state.randomPool.add(player.nome);
+  }
+  renderPlayers();
+  renderRandomPool();
+}
+
+function renderRandomPool() {
+  if (!els.randomPoolList) return;
+  els.randomPoolList.innerHTML = '';
+  const poolPlayers = state.players.filter(p => state.randomPool.has(p.nome));
+
+  if (els.randomPoolCount) {
+    els.randomPoolCount.textContent = `${poolPlayers.length} selecionados`;
+  }
+
+  // Show/hide panel
+  if (els.randomPoolPanel) {
+    els.randomPoolPanel.classList.toggle('is-hidden', poolPlayers.length === 0);
+  }
+
+  for (const player of poolPlayers) {
+    const li = document.createElement('li');
+    li.className = 'player-row slide-in pool-item';
+    li.dataset.name = player.nome;
+    li.innerHTML = `
+      <span class="player-name">${player.nome}</span>
+      <div class="player-actions">
+        <button class="btn btn-pool-remove" title="Remover do pool">
+          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    `;
+    const btn = li.querySelector('.btn-pool-remove');
+    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleRandomPool(player); });
+    els.randomPoolList.appendChild(li);
+  }
+}
+
 /* ───────── Auto Team ───────── */
 function autoTop() {
   const top = [...state.players].sort((a, b) => b.pontuacao - a.pontuacao).slice(0, state.teamSize);
@@ -268,13 +321,39 @@ function autoTop() {
 }
 
 function autoRandom() {
-  const shuffled = [...state.players].sort(() => Math.random() - 0.5);
-  const pick = shuffled.slice(0, state.teamSize);
-  state.selected.clear();
-  pick.forEach(p => state.selected.set(p.nome, p));
+  const poolSize = state.randomPool.size;
+  const minRequired = state.teamSize;
+
+  // If pool has players, use only pool; otherwise use all players
+  if (poolSize > 0) {
+    if (poolSize < minRequired) {
+      showWarning(`Selecione pelo menos ${minRequired} jogadores no pool para gerar um time de ${minRequired}.`);
+      return;
+    }
+    const poolPlayers = state.players.filter(p => state.randomPool.has(p.nome));
+    const shuffled = poolPlayers.sort(() => Math.random() - 0.5);
+    const pick = shuffled.slice(0, state.teamSize);
+    state.selected.clear();
+    pick.forEach(p => state.selected.set(p.nome, p));
+  } else {
+    const shuffled = [...state.players].sort(() => Math.random() - 0.5);
+    const pick = shuffled.slice(0, state.teamSize);
+    state.selected.clear();
+    pick.forEach(p => state.selected.set(p.nome, p));
+  }
   renderPlayers();
   renderTeam();
   updateMetrics();
+}
+
+function showWarning(msg) {
+  if (!els.warnings) return;
+  els.warnings.classList.remove('is-hidden');
+  els.warnings.textContent = msg;
+  setTimeout(() => {
+    els.warnings.classList.add('is-hidden');
+    els.warnings.textContent = '';
+  }, 3000);
 }
 
 function clearSelection() {
