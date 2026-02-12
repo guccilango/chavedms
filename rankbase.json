@@ -1,0 +1,60 @@
+{
+  "sistema_rank": {
+    "descricao": "Sistema de classificação de equipes baseado na média da pontuação dos jogadores.",
+    "pontuacao_maxima_individual": 1000,
+    "tamanhos_de_time_permitidos": [4, 6],
+    "formula_calculo": {
+      "passo_1": "somar todas as pontuacoes individuais do time",
+      "passo_2": "dividir a soma pelo numero de jogadores",
+      "formula_matematica": "media = soma_total / quantidade_de_jogadores"
+    },
+    "observacao": "A media é usada igualmente para times de 4 ou 6 jogadores."
+  },
+  "faixas_de_rank": {
+    "S": { "min": 950, "max": 1000 },
+    "A": { "min": 900, "max": 949 },
+    "B": { "min": 800, "max": 899 },
+    "C": { "min": 700, "max": 799 },
+    "D": { "min": 600, "max": 699 },
+    "E": { "min": 0, "max": 599 }
+  },
+  "regras_por_tamanho": {
+    "4_jogadores": {
+      "pontuacao_maxima_total": 4000,
+      "calculo": "media = soma_total / 4",
+      "rank_baseado_em": "media"
+    },
+    "6_jogadores": {
+      "pontuacao_maxima_total": 6000,
+      "calculo": "media = soma_total / 6",
+      "rank_baseado_em": "media"
+    }
+  },
+  "jogadores": [
+    { "nome": "Slade", "pontuacao": 1000 },
+    { "nome": "Bili", "pontuacao": 1000 },
+    { "nome": "Kaze", "pontuacao": 1000 },
+    { "nome": "Bebeh", "pontuacao": 1000 },
+    { "nome": "You", "pontuacao": 1000 },
+    { "nome": "Bahia", "pontuacao": 970 },
+    { "nome": "Ze", "pontuacao": 450 },
+    { "nome": "Guccilango", "pontuacao": 1000 },
+    { "nome": "Leozin", "pontuacao": 600 },
+    { "nome": "Zahir", "pontuacao": 780 },
+    { "nome": "Ivo", "pontuacao": 550 },
+    { "nome": "Salatiel", "pontuacao": 1000 },
+    { "nome": "Jota", "pontuacao": 850 },
+    { "nome": "Jasmin", "pontuacao": 1000 },
+    { "nome": "Litiane", "pontuacao": 750 },
+    { "nome": "Leodogf", "pontuacao": 600 },
+    { "nome": "Maguzz", "pontuacao": 800 },
+    { "nome": "Connor", "pontuacao": 750 },
+    { "nome": "Flamengo", "pontuacao": 400 },
+    { "nome": "Rossan", "pontuacao": 400 },
+    { "nome": "Rafanatal", "pontuacao": 500 },
+    { "nome": "Lins", "pontuacao": 900 },
+    { "nome": "Pam", "pontuacao": 950 },
+    { "nome": "Bigode", "pontuacao": 550 },
+    { "nome": "Dani", "pontuacao": 400 }
+  ]
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menorzinho midia simulator</title>
+  <meta name="description" content="Sistema de classificação de equipes baseado na média da pontuação dos jogadores." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="container">
+      <h1>Menorzinho midia simulator</h1>
+      <p class="subtitle">Simulador interativo de mídia de times</p>
+    </div>
+  </header>
+
+  <main class="container app-main">
+    <!-- Cutscene / Intro overlay -->
+    <div id="introOverlay" class="intro-overlay" aria-hidden="true">
+      <div class="intro-content">
+        <picture>
+          <source srcset="assets/thelois.png" type="image/png" />
+          <img src="assets/insignia.svg" class="intro-logo" alt="The Lost Insignia" />
+        </picture>
+        <h2 class="intro-title">Menorzinho midia simulator</h2>
+      </div>
+    </div>
+    <section class="config is-hidden" id="config">
+      <h2>Configuração</h2>
+      <div class="config-content">
+        <div>
+          <div><strong>Descrição:</strong> <span id="cfgDescricao">—</span></div>
+          <div><strong>Máx. pontuação individual:</strong> <span id="cfgMaxIndividual">—</span></div>
+          <div><strong>Tamanhos permitidos:</strong> <span id="cfgSizes">—</span></div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-title">Fórmula</div>
+          <code id="cfgFormula">media = soma_total / quantidade_de_jogadores</code>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div class="control-group">
+        <label class="control-label">Tamanho do time</label>
+        <div class="size-picker" id="sizePicker">
+          <label class="size-option">
+            <input type="radio" name="teamSize" value="4" checked />
+            <span class="size-box">4</span>
+          </label>
+          <label class="size-option">
+            <input type="radio" name="teamSize" value="6" />
+            <span class="size-box">6</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="searchInput">Buscar jogadores</label>
+        <input id="searchInput" class="search" type="search" placeholder="Nome do jogador…" />
+      </div>
+
+      <div class="control-actions">
+        <button id="btnAutoTop" class="btn btn-action btn-top">
+          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5-6.5 4.5 2-7.5L2 9h7z"/></svg>
+          <span>Top Players</span>
+        </button>
+        <button id="btnAutoRandom" class="btn btn-action btn-random">
+          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M4 4h4v4H4zM10 4h4v4h-4zM16 4h4v4h-4zM4 10h4v4H4zM10 10h4v4h-4zM16 10h4v4h-4zM4 16h4v4H4zM10 16h4v4h-4zM16 16h4v4h-4z"/></svg>
+          <span>Aleatório</span>
+        </button>
+        <button id="btnLimpar" class="btn btn-action btn-clear">
+          <svg class="btn-svg" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span>Limpar</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="panel players-panel">
+        <div class="panel-header">
+          <h3>Jogadores</h3>
+          <small id="playersCount">— jogadores</small>
+        </div>
+        <ul id="playersList" class="players-list" aria-live="polite"></ul>
+      </div>
+
+      <div class="panel team-panel">
+        <div class="panel-header">
+          <h3>Time Selecionado</h3>
+          <small id="teamCount">0 / 4</small>
+        </div>
+        <ul id="teamList" class="team-list"></ul>
+
+        <!-- Rank result only -->
+        <div class="result-card" id="resultCard">
+          <div class="result-rank" id="resultRank">—</div>
+          <div class="result-phrase" id="resultPhrase">Monte um time para ver o rank.</div>
+        </div>
+
+        <div class="metrics is-hidden">
+          <div class="metric"><span class="metric-label">Soma</span><span id="metricSoma">0</span></div>
+          <div class="metric"><span class="metric-label">Média</span><span id="metricMedia">0</span></div>
+          <div class="metric"><span class="metric-label">Rank</span><span id="metricRank">—</span></div>
+        </div>
+
+        <div class="rules is-hidden" id="rulesBox">
+          <div class="rule"><strong>Máx. total permitido:</strong> <span id="ruleMaxTotal">—</span></div>
+          <div class="rule"><strong>Baseado em:</strong> <span id="ruleBase">—</span></div>
+          <div class="rule"><strong>Cálculo:</strong> <code id="ruleFormula">—</code></div>
+        </div>
+
+        <div id="warnings" class="warnings is-hidden" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="legend is-hidden">
+      <h2>Faixas de Rank</h2>
+      <div id="rankBands" class="bands"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container">
+      <span>Feito pelos menor quinte cria do rs 🔥</span>
+    </div>
+  </footer>
+
+  <!-- Insignia badge (corner) -->
+  <img src="assets/thelois.png" class="site-badge" alt="The Lois Icon" aria-hidden="true" />
+
+  <!-- Rank reveal cutscene -->
+  <div id="rankOverlay" class="rank-overlay" aria-hidden="true">
+    <div class="rank-particles"></div>
+    <div class="rank-overlay-content">
+      <div class="rank-overlay-letter" id="rankOverlayLetter">—</div>
+      <div class="rank-overlay-phrase" id="rankOverlayPhrase"></div>
+    </div>
+  </div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
