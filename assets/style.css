@@ -150,7 +150,7 @@ h3 { margin: 8px 0; font-size: 16px; }
 /* Rank overlay - base */
 .rank-overlay { position: fixed; inset: 0; backdrop-filter: blur(4px); display: none; place-items: center; z-index: 1000; }
 .rank-overlay.show { display: grid; animation: overlay-in 320ms ease both; }
-.rank-overlay-content { text-align: center; }
+.rank-overlay-content { text-align: center; transform: translateY(-10%); }
 .rank-overlay-letter { font-family: 'Bebas Neue', Inter, system-ui; font-size: 180px; font-weight: 400; letter-spacing: 8px; line-height: 1; animation: rank-slam 600ms cubic-bezier(.2,.8,.2,1) both; }
 .rank-overlay-phrase { margin-top: 16px; font-family: 'Poppins', Inter, system-ui; font-size: 24px; font-weight: 600; opacity: 0; animation: phrase-fade 400ms ease 400ms both; }
 

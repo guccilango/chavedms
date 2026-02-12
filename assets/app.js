@@ -53,7 +53,7 @@ const rankPhrases = {
 /* ───────── Config Load ───────── */
 async function loadConfig() {
   try {
-    const res = await fetch('./rankbase.json');
+    const res = await fetch('./rankbase.json?v=' + Date.now());
     const json = await res.json();
     state.config = json;
     bindConfig();
