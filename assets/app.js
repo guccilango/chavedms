@@ -1,5 +1,3 @@
-/* Menorzinho Midia Simulator App */
-
 const state = {
   config: null,
   teamSize: 4,
@@ -50,7 +48,6 @@ const rankPhrases = {
   E: 'Nem manda isso',
 };
 
-/* ───────── Config Load ───────── */
 async function loadConfig() {
   try {
     const res = await fetch('./rankbase.json?v=' + Date.now());
@@ -94,7 +91,6 @@ function bindBands() {
   }
 }
 
-/* ───────── Render Players ───────── */
 function renderPlayers() {
   const term = (els.searchInput?.value || '').trim().toLowerCase();
   const filtered = state.players
@@ -139,7 +135,6 @@ function renderPlayers() {
   }
 }
 
-/* ───────── Render Team ───────── */
 function renderTeam() {
   els.teamList.innerHTML = '';
   const team = [...state.selected.values()];
@@ -175,7 +170,6 @@ function renderTeam() {
   state.lastRemoved = null;
 }
 
-/* ───────── Toggle Player ───────── */
 function togglePlayer(player) {
   if (state.selected.has(player.nome)) {
     state.selected.delete(player.nome);
@@ -190,7 +184,6 @@ function togglePlayer(player) {
   updateMetrics();
 }
 
-/* ───────── Team Size ───────── */
 function setTeamSize(size) {
   state.teamSize = size;
   while (state.selected.size > state.teamSize) {
@@ -203,7 +196,6 @@ function setTeamSize(size) {
   updateMetrics();
 }
 
-/* ───────── Rules ───────── */
 function updateRules() {
   if (!state.config) return;
   const rules = state.config.regras_por_tamanho;
@@ -214,7 +206,6 @@ function updateRules() {
   if (els.ruleFormula) els.ruleFormula.textContent = r.calculo;
 }
 
-/* ───────── Metrics ───────── */
 function sum(arr) { return arr.reduce((a, b) => a + b, 0); }
 
 function getRankByAverage(media) {
@@ -248,22 +239,17 @@ function updateMetrics() {
     if (els.resultPhrase) els.resultPhrase.textContent = rankPhrases[rank] || '—';
     if (els.resultCard) els.resultCard.classList.add('reveal');
 
-    // Rank cutscene overlay with per-rank styling
     const letterEl = document.getElementById('rankOverlayLetter');
     const phraseEl = document.getElementById('rankOverlayPhrase');
     const overlay = document.getElementById('rankOverlay');
     if (letterEl && overlay) {
-      // Remove previous rank classes
       overlay.className = 'rank-overlay';
       
-      // Set content
       letterEl.textContent = rank;
       if (phraseEl) phraseEl.textContent = rankPhrases[rank] || '';
       
-      // Add rank-specific class for colors/effects
       overlay.classList.add(`rank-${rank}`, 'show');
       
-      // Auto-hide after animation
       setTimeout(() => {
         overlay.classList.remove('show');
       }, 2000);
@@ -271,7 +257,6 @@ function updateMetrics() {
   }
 }
 
-/* ───────── Random Pool Toggle ───────── */
 function toggleRandomPool(player) {
   if (state.randomPool.has(player.nome)) {
     state.randomPool.delete(player.nome);
@@ -291,7 +276,6 @@ function renderRandomPool() {
     els.randomPoolCount.textContent = `${poolPlayers.length} selecionados`;
   }
 
-  // Show/hide panel
   if (els.randomPoolPanel) {
     els.randomPoolPanel.classList.toggle('is-hidden', poolPlayers.length === 0);
   }
@@ -313,7 +297,6 @@ function renderRandomPool() {
   }
 }
 
-/* ───────── Auto Team ───────── */
 function autoTop() {
   const top = [...state.players].sort((a, b) => b.pontuacao - a.pontuacao).slice(0, state.teamSize);
   state.selected.clear();
@@ -327,7 +310,6 @@ function autoRandom() {
   const poolSize = state.randomPool.size;
   const minRequired = state.teamSize;
 
-  // If pool has players, use only pool; otherwise use all players
   if (poolSize > 0) {
     if (poolSize < minRequired) {
       showWarning(`Selecione pelo menos ${minRequired} jogadores no pool para gerar um time de ${minRequired}.`);
@@ -366,7 +348,6 @@ function clearSelection() {
   updateMetrics();
 }
 
-/* ───────── Events ───────── */
 function initEvents() {
   if (els.sizePicker) {
     els.sizePicker.addEventListener('change', (e) => {
@@ -379,7 +360,6 @@ function initEvents() {
   if (els.btnAutoRandom) els.btnAutoRandom.addEventListener('click', autoRandom);
   if (els.btnLimpar) els.btnLimpar.addEventListener('click', clearSelection);
 
-  // Ripple effect
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.btn');
     if (!btn) return;
@@ -392,7 +372,6 @@ function initEvents() {
     setTimeout(() => ripple.remove(), 600);
   });
 
-  // Enter key adds first player
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && els.playersList) {
       const first = els.playersList.querySelector('.player-row');
@@ -405,7 +384,6 @@ function initEvents() {
   });
 }
 
-/* ───────── Intro Overlay ───────── */
 function dismissIntro() {
   if (!els.introOverlay) return;
   els.introOverlay.classList.add('hide');
@@ -414,17 +392,14 @@ function dismissIntro() {
 
 function setupIntro() {
   if (!els.introOverlay) return;
-  // Dismiss on click or any key
   els.introOverlay.addEventListener('click', dismissIntro);
   document.addEventListener('keydown', function handler() {
     dismissIntro();
     document.removeEventListener('keydown', handler);
   });
-  // Auto dismiss after 3s if no interaction
   setTimeout(dismissIntro, 3000);
 }
 
-/* ───────── Init ───────── */
 initEvents();
 loadConfig();
 setupIntro();
